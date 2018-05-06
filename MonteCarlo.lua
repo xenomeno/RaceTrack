@@ -1,5 +1,3 @@
-dofile("CommonAI.lua")
-
 local PASS		= 0
 local BLOCK		= 1
 local START		= 2
@@ -556,7 +554,7 @@ local function MonteCarloOffPolicy(track, eps_soft, threshold, max_steps, max_no
       local performance = TestPolicy(policy, track, 20, 1000)
 			print(string.format("#%d, No improvement steps: %d, Episode min/max/avg[last]: %d/%d/%.2f[%d/%d/%.2f], Best Steps: %d, Delta: %.2f, Performace: %.2f", step, no_improv_steps, ep_min, ep_max, ep_total_len / step, ep_min_last, ep_max_last, ep_total_len_last / stats, policy.best_steps, delta, performance))
       ep_min_last, ep_max_last, ep_total_len_last = nil, nil, nil
-			--PrintPolicy(policy, track)
+			--PrintPolicy(policy, track, 2)
 			--PrintStateActionValueFunction(policy, track, Q, 2)
 		end
     if delta < threshold then break end
@@ -566,8 +564,6 @@ local function MonteCarloOffPolicy(track, eps_soft, threshold, max_steps, max_no
 end
 
 function RunRaceTrack()
-	PauseInfiniteLoopDetection("AI")
-	
 	local track1 = TrackToGrid(s_Track1)
 	local track2 = TrackToGrid(s_Track2)
 	local track3 = TrackToGrid(s_Track3)
@@ -575,10 +571,10 @@ function RunRaceTrack()
   
  	local track = track4
 
-  local policy, steps, Q, shortest_MC = MonteCarloOffPolicy(track, 0.1, 0.001, 10000, 20000)
+  local policy, steps, Q, shortest_MC = MonteCarloOffPolicy(track, 0.1, 0.001, 100000, 20000)
   print(string.format("Finished in %d steps", steps))
-  PrintPolicy(policy, track, 2)
-  PrintStateActionValueFunction(policy, track, Q, 2)
+  PrintPolicy(policy, track, 0)
+  PrintStateActionValueFunction(policy, track, Q, 0)
 	
   local rand_policy = GenerateRandomPolicy(track)
   local rand_result = TestPolicy(rand_policy, track, 10000, 1000)
@@ -595,8 +591,6 @@ function RunRaceTrack()
   PrintEpisode(policy, shortest_policy)
   print("Shortest episode by Monte Carlo Control")
   PrintEpisode(policy, shortest_MC)
-  
-	ResumeInfiniteLoopDetection("AI")
 end
 
 RunRaceTrack()
